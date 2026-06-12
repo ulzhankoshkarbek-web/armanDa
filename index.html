@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ АрманКарта | Жеке аккаунт жүйесі</title>
+    <style>
+        :root {
+            --bg: #fdf6f0;
+            --card: #ffffff;
+            --text: #2d1f1a;
+            --text2: #7a665e;
+            --border: #e8d5c8;
+            --primary: #d4745c;
+            --primary2: #f0a58c;
+            --accent: #c9a44b;
+            --gold: #e8c55a;
+            --pink: #e091b0;
+            --blue: #6da8cf;
+            --green: #7aaa7a;
+            --purple: #a890c8;
+            --shadow: 0 3px 12px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+            --radius: 18px;
+            --transition: 0.3s ease;
+        }
+
+        .dark-mode {
+            --bg: #1a1518;
+            --card: #2a2228;
+            --text: #f0e6e0;
+            --text2: #b8a8a0;
+            --border: #3d3035;
+            --primary: #e88470;
+            --shadow: 0 3px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        /* ====== АВТОРИЗАЦИЯ ЭКРАНЫ ====== */
+        .auth-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fdf6f0 0%, #fce4d6 50%, #f8d5c4 100%);
+            padding: 20px;
+        }
+        .dark-mode .auth-screen {
+            background: linear-gradient(135deg, #1a1518 0%, #2d1f2a 50%, #1f1820 100%);
+        }
+        .auth-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+        .auth-card .logo {
+            font-size: 4em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .auth-card h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        .auth-card p {
+            color: var(--text2);
+            margin-bottom: 25px;
+            font-size: 0.95em;
+        }
+        .auth-card input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-size: 1em;
+            margin-bottom: 12px;
+            background: var(--bg);
+            color: var(--text);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .auth-card input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212,116,92,0.12);
+        }
+        .auth-card button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary2));
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 8px;
+        }
+        .auth-card button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212,116,92,0.35);
+        }
+        .auth-toggle {
+            margin-top: 15px;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-decoration: underline;
+        }
+        .auth-error {
+            color: #e74c3c;
+            font-size: 0.85em;
+            min-height: 20px;
+            margin-top: 5px;
+        }
+        .auth-success {
+            color: #27ae60;
+            font-size: 0.85em;
+            min-height: 20px;
+            margin-top: 5px;
+        }
+
+        /* ====== НЕГІЗГІ ҚОСЫМША ====== */
+        .app-container { display: none; }
+        .app-container.active { display: block; }
+        .auth-screen.hidden { display: none; }
+
+        /* ====== ЖОҒАРҒЫ ПАНЕЛЬ ====== */
+        .top-bar {
+            background: var(--card);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border);
+        }
+        .top-bar .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+        .top-bar nav {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        .top-bar nav button {
+            padding: 8px 14px;
+            border: 2px solid var(--border);
+            background: var(--card);
+            border-radius: 22px;
+            cursor: pointer;
+            font-size: 0.85em;
+            color: var(--text);
+            transition: var(--transition);
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        .top-bar nav button:hover,
+        .top-bar nav button.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+        }
+        .icon-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .btn-primary {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary2));
+            color: #fff;
+            border: none;
+            border-radius: 22px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: var(--transition);
+            white-space: nowrap;
+            box-shadow: 0 3px 10px rgba(212,116,92,0.25);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(212,116,92,0.35);
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: var(--bg);
+            border-radius: 22px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+            white-space: nowrap;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* ====== НЕГІЗГІ КОНТЕНТ ====== */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ====== СТАТИСТИКА ====== */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 18px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .stat-card .stat-icon { font-size: 2em; margin-bottom: 5px; }
+        .stat-card .stat-val { font-size: 1.8em; font-weight: bold; color: var(--primary); }
+        .stat-card .stat-lbl { font-size: 0.8em; color: var(--text2); }
+
+        /* ====== ТАҚТА ====== */
+        .board-container {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            min-height: 300px;
+            border: 3px dashed var(--border);
+            margin-bottom: 20px;
+        }
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+            padding: 10px 0;
+        }
+        .dream-card {
+            background: var(--bg);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .dream-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary2);
+        }
+        .dream-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+        .dream-card .card-body {
+            padding: 10px 12px;
+        }
+        .dream-card .card-title {
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .dream-card .card-cat {
+            font-size: 0.7em;
+            color: var(--text2);
+        }
+        .dream-card .card-actions {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .dream-card:hover .card-actions { opacity: 1; }
+        .card-actions button {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.9);
+            cursor: pointer;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card-actions .btn-del:hover { background: #e74c3c; color: #fff; }
+
+        .category-filter {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .cat-chip {
+            padding: 7px 14px;
+            border-radius: 18px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            background: var(--card);
+            font-size: 0.82em;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        .cat-chip:hover,
+        .cat-chip.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* ====== ГАЛЕРЕЯ ====== */
+        .masonry-grid {
+            columns: 5;
+            column-gap: 12px;
+        }
+        @media (max-width: 1200px) { .masonry-grid { columns: 4; } }
+        @media (max-width: 900px) { .masonry-grid { columns: 3; } }
+        @media (max-width: 600px) { .masonry-grid { columns: 2; } }
+
+        .pin-card {
+            break-inside: avoid;
+            margin-bottom: 12px;
+            background: var(--card);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            cursor: pointer;
+        }
+        .pin-card:hover { transform: scale(1.02); box-shadow: var(--shadow-lg); }
+        .pin-card img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+        }
+        .pin-card .pin-body { padding: 10px 12px; }
+        .pin-card .pin-body h4 { font-size: 0.85em; margin-bottom: 2px; }
+        .pin-card .pin-body p { font-size: 0.72em; color: var(--text2); }
+        .pin-card .save-pin-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 7px 13px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.75em;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .pin-card:hover .save-pin-btn { opacity: 1; }
+        .pin-card .save-pin-btn.saved { background: var(--gold); color: #333; }
+
+        /* ====== МОДАЛЬ ====== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 25px;
+            max-width: 550px;
+            width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+        .modal h2 { text-align: center; margin-bottom: 18px; color: var(--primary); }
+        .modal input,
+        .modal textarea,
+        .modal select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: inherit;
+            transition: var(--transition);
+        }
+        .modal input:focus,
+        .modal textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .modal textarea { min-height: 70px; resize: vertical; }
+        .modal .color-row {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .color-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: var(--transition);
+        }
+        .color-dot:hover,
+        .color-dot.sel { border-color: var(--text); transform: scale(1.12); }
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+        .btn-sec {
+            padding: 10px 20px;
+            background: var(--border);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        .quote-bar {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary2), var(--pink));
+            border-radius: var(--radius);
+            color: #fff;
+            font-size: 1.1em;
+            font-style: italic;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text2);
+        }
+        .empty-state .big-icon { font-size: 4em; display: block; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- ============ АВТОРИЗАЦИЯ ЭКРАНЫ ============ -->
+    <div class="auth-screen" id="authScreen">
+        <div class="auth-card" id="authCard">
+            <span class="logo">✨</span>
+            <h1>АрманКарта</h1>
+            <p>Армандарыңызды визуализациялаңыз</p>
+            <div id="authForm">
+                <input type="text" id="authName" placeholder="Атыңыз">
+                <input type="password" id="authPass" placeholder="Құпия сөз (кемінде 4 таңба)">
+                <button onclick="handleAuth()" id="authBtn">🚀 Кіру</button>
+                <div class="auth-error" id="authError"></div>
+                <div class="auth-success" id="authSuccess"></div>
+                <p class="auth-toggle" id="authToggle" onclick="toggleAuthMode()">Жаңа аккаунт ашу →</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ НЕГІЗГІ ҚОСЫМША ============ -->
+    <div class="app-container" id="appContainer">
+        <!-- ЖОҒАРҒЫ ПАНЕЛЬ -->
+        <div class="top-bar">
+            <div class="logo">✨ АрманКарта</div>
+            <nav>
+                <button class="active" onclick="switchTab('board')">📌 Тақтам</button>
+                <button onclick="switchTab('gallery')">🖼️ Галерея</button>
+                <button onclick="switchTab('goals')">🎯 Мақсаттар</button>
+            </nav>
+            <button class="icon-btn" onclick="toggleTheme()" title="Режим">🌓</button>
+            <button class="btn-primary" onclick="openAddDreamModal()">+ Арман қосу</button>
+            <div class="user-badge" title="Шығу" onclick="logout()">
+                <div class="user-avatar">👤</div>
+                <span id="currentUserName">...</span>
+                <span style="font-size:0.7em;">🚪</span>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <!-- ЦИТАТА -->
+            <div class="quote-bar" id="quoteDisplay" onclick="changeQuote()">
+                "Арман — бұл болашақтың алдын-ала көруі."
+            </div>
+
+            <!-- ТАҚТА БЕТІ -->
+            <div id="tab-board">
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon">🌟</div>
+                        <div class="stat-val" id="totalDreams">0</div>
+                        <div class="stat-lbl">Барлық арман</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-val" id="completedDreams">0</div>
+                        <div class="stat-lbl">Орындалды</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-val" id="progressPct">0%</div>
+                        <div class="stat-lbl">Прогресс</div>
+                    </div>
+                </div>
+
+                <div class="category-filter" id="categoryFilters">
+                    <span class="cat-chip active" onclick="filterBoard('all', this)">Барлығы</span>
+                </div>
+
+                <div class="board-container">
+                    <div class="board-grid" id="boardGrid">
+                        <div class="empty-state" id="emptyBoard">
+                            <span class="big-icon">🌙</span>
+                            <h3>Тақта бос</h3>
+                            <p>Галереядан суреттер қосыңыз немесе жаңа арман жазыңыз!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ГАЛЕРЕЯ БЕТІ -->
+            <div id="tab-gallery" style="display:none;">
+                <h2 style="margin-bottom:12px;">🖼️ Идеялар галереясы</h2>
+                <div class="category-filter" id="galleryFilters">
+                    <span class="cat-chip active" onclick="filterGallery('all', this)">Барлығы</span>
+                </div>
+                <div class="masonry-grid" id="galleryGrid"></div>
+                <div style="text-align:center;margin:25px;">
+                    <button class="btn-primary" onclick="loadMoreGallery()">📥 Тағы жүктеу</button>
+                </div>
+            </div>
+
+            <!-- МАҚСАТТАР БЕТІ -->
+            <div id="tab-goals" style="display:none;">
+                <h2 style="margin-bottom:12px;">🎯 Мерзімді мақсаттар</h2>
+                <div id="goalsContainer"></div>
+                <button class="btn-primary" onclick="openAddGoalModal()" style="margin-top:12px;">+ Мақсат қосу</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== МОДАЛЬДАР ====== -->
+    <div class="modal-overlay" id="addDreamModal">
+        <div class="modal">
+            <h2>✨ Жаңа арман</h2>
+            <input type="text" id="dreamTitle" placeholder="Арман атауы">
+            <textarea id="dreamDesc" placeholder="Сипаттама"></textarea>
+            <select id="dreamCat">
+                <option value="travel">✈️ Саяхат</option>
+                <option value="career">💼 Мансап</option>
+                <option value="health">💪 Денсаулық</option>
+                <option value="love">❤️ Қарым-қатынас</option>
+                <option value="wealth">💰 Байлық</option>
+                <option value="education">📚 Білім</option>
+                <option value="creative">🎨 Шығармашылық</option>
+                <option value="other">🌟 Басқа</option>
+            </select>
+            <input type="url" id="dreamImgUrl" placeholder="Сурет URL (міндетті емес)">
+            <input type="file" id="dreamImgFile" accept="image/*">
+            <label style="font-size:0.85em;color:var(--text2);">Түс:</label>
+            <div class="color-row" id="colorRow">
+                <span class="color-dot sel" style="background:#d4745c;" data-c="#d4745c"></span>
+                <span class="color-dot" style="background:#f0a58c;" data-c="#f0a58c"></span>
+                <span class="color-dot" style="background:#e091b0;" data-c="#e091b0"></span>
+                <span class="color-dot" style="background:#6da8cf;" data-c="#6da8cf"></span>
+                <span class="color-dot" style="background:#7aaa7a;" data-c="#7aaa7a"></span>
+                <span class="color-dot" style="background:#a890c8;" data-c="#a890c8"></span>
+                <span class="color-dot" style="background:#e8c55a;" data-c="#e8c55a"></span>
+            </div>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-bottom:10px;">
+                <input type="checkbox" id="dreamDone"> Орындалды ✅
+            </label>
+            <div class="modal-btns">
+                <button class="btn-primary" onclick="addDream()">💾 Сақтау</button>
+                <button class="btn-sec" onclick="closeModal('addDreamModal')">Бас тарту</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="addGoalModal">
+        <div class="modal">
+            <h2>🎯 Жаңа мақсат</h2>
+            <input type="text" id="goalTitle" placeholder="Мақсат атауы">
+            <input type="date" id="goalDate">
+            <div class="modal-btns">
+                <button class="btn-primary" onclick="addGoal()">💾 Сақтау</button>
+                <button class="btn-sec" onclick="closeModal('addGoalModal')">Бас тарту</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== ДЕРЕКТЕР ҚҰРЫЛЫМЫ ====================
+        const DB_KEY = 'dreamboard_accounts_v2';
+        let allAccounts = JSON.parse(localStorage.getItem(DB_KEY)) || {};
+        let currentUser = null; // { name, password, data: { dreams, goals, theme } }
+
+        const categories = [
+            { id: 'all', emoji: '🌟', name: 'Барлығы' },
+            { id: 'travel', emoji: '✈️', name: 'Саяхат' },
+            { id: 'career', emoji: '💼', name: 'Мансап' },
+            { id: 'health', emoji: '💪', name: 'Денсаулық' },
+            { id: 'love', emoji: '❤️', name: 'Қарым-қатынас' },
+            { id: 'wealth', emoji: '💰', name: 'Байлық' },
+            { id: 'education', emoji: '📚', name: 'Білім' },
+            { id: 'creative', emoji: '🎨', name: 'Шығармашылық' },
+            { id: 'other', emoji: '🌟', name: 'Басқа' },
+        ];
+
+        const quotes = [
+            '"Армандарыңызға сеніңіз, өйткені олар сіздің болашағыңыздың картасы."',
+            '"Егер сіз армандай алсаңыз, оны жүзеге асыра аласыз." — Уолт Дисней',
+            '"Арман — бұл болашақтың алдын-ала көруі." — Виктор Гюго',
+            '"Үлкен армандар үлкен жетістіктерге жетелейді." — Абай',
+            '"Бүгін армандаңыз, ертең әрекет етіңіз."',
+            '"Сіздің арманыңыз — сіздің компасыңыз." — Стив Джобс',
+        ];
+        let quoteIdx = 0;
+
+        const galleryData = [
+            { url: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=500&fit=crop", title: "Париж", cat: "travel" },
+            { url: "https://images.unsplash.com/photo-1528127269322-539801943592?w=400&h=600&fit=crop", title: "Бали", cat: "travel" },
+            { url: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=550&fit=crop", title: "Токио", cat: "travel" },
+            { url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=350&fit=crop", title: "Бизнес", cat: "career" },
+            { url: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=500&fit=crop", title: "Мансап", cat: "career" },
+            { url: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=550&fit=crop", title: "Йога", cat: "health" },
+            { url: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=400&fit=crop", title: "Фитнес", cat: "health" },
+            { url: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=400&h=450&fit=crop", title: "Отбасы", cat: "love" },
+            { url: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&h=380&fit=crop", title: "Қаржы", cat: "wealth" },
+            { url: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=480&fit=crop", title: "Кітап", cat: "education" },
+            { url: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=550&fit=crop", title: "Сурет", cat: "creative" },
+            { url: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=500&fit=crop", title: "Тамақтану", cat: "health" },
+            { url: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=500&fit=crop", title: "Инвестиция", cat: "wealth" },
+            { url: "https://images.unsplash.com/photo-1523050854058-8df90110f55f?w=400&h=420&fit=crop", title: "Университет", cat: "education" },
+            { url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=600&fit=crop", title: "Музыка", cat: "creative" },
+            { url: "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=400&h=450&fit=crop", title: "Нью-Йорк", cat: "travel" },
+        ];
+
+        // ==================== АВТОРИЗАЦИЯ ====================
+        let authMode = 'login'; // 'login' | 'register'
+
+        function toggleAuthMode() {
+            authMode = authMode === 'login' ? 'register' : 'login';
+            document.getElementById('authBtn').textContent = authMode === 'login' ? '🚀 Кіру' : '📝 Тіркелу';
+            document.getElementById('authToggle').textContent = authMode === 'login' ? 'Жаңа аккаунт ашу →' : '← Кіруге қайту';
+            document.getElementById('authError').textContent = '';
+            document.getElementById('authSuccess').textContent = '';
+            document.getElementById('authName').value = '';
+            document.getElementById('authPass').value = '';
+        }
+
+        function handleAuth() {
+            const name = document.getElementById('authName').value.trim();
+            const pass = document.getElementById('authPass').value.trim();
+            const errorEl = document.getElementById('authError');
+            const successEl = document.getElementById('authSuccess');
+            errorEl.textContent = '';
+            successEl.textContent = '';
+
+            if (!name || !pass) {
+                errorEl.textContent = '⚠️ Барлық өрістерді толтырыңыз!';
+                return;
+            }
+            if (pass.length < 4) {
+                errorEl.textContent = '⚠️ Құпия сөз кемінде 4 таңба болуы керек!';
+                return;
+            }
+
+            if (authMode === 'register') {
+                if (allAccounts[name]) {
+                    errorEl.textContent = '⚠️ Бұл атпен аккаунт бар! Басқа ат таңдаңыз.';
+                    return;
+                }
+                allAccounts[name] = {
+                    password: pass,
+                    data: { dreams: [], goals: [], theme: 'light' }
+                };
+                saveAllAccounts();
+                successEl.textContent = '✅ Аккаунт сәтті жасалды! Енді кіріңіз.';
+                toggleAuthMode();
+                return;
+            }
+
+            // Login
+            if (!allAccounts[name]) {
+                errorEl.textContent = '❌ Мұндай аккаунт табылмады. Тіркеліңіз.';
+                return;
+            }
+            if (allAccounts[name].password !== pass) {
+                errorEl.textContent = '❌ Құпия сөз қате!';
+                return;
+            }
+
+            currentUser = { name, ...allAccounts[name] };
+            loginSuccess();
+        }
+
+        function loginSuccess() {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('appContainer').classList.add('active');
+            document.getElementById('currentUserName').textContent = currentUser.name;
+
+            if (currentUser.data.theme === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+
+            renderAll();
+        }
+
+        function logout() {
+            if (confirm('Шығуды қалайсыз ба? Деректеріңіз сақталады.')) {
+                saveCurrentUserData();
+                currentUser = null;
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('appContainer').classList.remove('active');
+                document.getElementById('authName').value = '';
+                document.getElementById('authPass').value = '';
+                document.getElementById('authError').textContent = '';
+                document.getElementById('authSuccess').textContent = '';
+            }
+        }
+
+        function saveAllAccounts() {
+            if (currentUser) saveCurrentUserData();
+            localStorage.setItem(DB_KEY, JSON.stringify(allAccounts));
+        }
+
+        function saveCurrentUserData() {
+            if (!currentUser) return;
+            allAccounts[currentUser.name].data = currentUser.data;
+            allAccounts[currentUser.name].password = currentUser.password;
+            localStorage.setItem(DB_KEY, JSON.stringify(allAccounts));
+        }
+
+        function getUserData() {
+            return currentUser ? currentUser.data : { dreams: [], goals: [], theme: 'light' };
+        }
+
+        function updateUserData(newData) {
+            if (!currentUser) return;
+            currentUser.data = newData;
+            saveAllAccounts();
+        }
+
+        // ==================== БЕТТЕР ====================
+        function switchTab(tab) {
+            document.getElementById('tab-board').style.display = tab === 'board' ? 'block' : 'none';
+            document.getElementById('tab-gallery').style.display = tab === 'gallery' ? 'block' : 'none';
+            document.getElementById('tab-goals').style.display = tab === 'goals' ? 'block' : 'none';
+
+            document.querySelectorAll('.top-bar nav button').forEach(b => b.classList.remove('active'));
+            const btns = document.querySelectorAll('.top-bar nav button');
+            if (tab === 'board' && btns[0]) btns[0].classList.add('active');
+            if (tab === 'gallery' && btns[1]) btns[1].classList.add('active');
+            if (tab === 'goals' && btns[2]) btns[2].classList.add('active');
+
+            if (tab === 'gallery') renderGallery();
+            if (tab === 'goals') renderGoals();
+            if (tab === 'board') renderBoard();
+        }
+
+        // ==================== ТАҚТА ====================
+        let boardFilter = 'all';
+
+        function renderCategoryFilters() {
+            const container = document.getElementById('categoryFilters');
+            container.innerHTML = categories.map(c => `
+                <span class="cat-chip ${c.id === boardFilter ? 'active' : ''}" onclick="filterBoard('${c.id}', this)">
+                    ${c.emoji} ${c.name}
+                </span>
+            `).join('');
+
+            const galleryFilters = document.getElementById('galleryFilters');
+            galleryFilters.innerHTML = categories.map(c => `
+                <span class="cat-chip ${c.id === 'all' ? 'active' : ''}" onclick="filterGallery('${c.id}', this)">
+                    ${c.emoji} ${c.name}
+                </span>
+            `).join('');
+        }
+
+        function filterBoard(cat, el) {
+            boardFilter = cat;
+            document.querySelectorAll('#categoryFilters .cat-chip').forEach(c => c.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderBoard();
+        }
+
+        function renderBoard() {
+            const data = getUserData();
+            const dreams = boardFilter === 'all' ? data.dreams : data.dreams.filter(d => d.category === boardFilter);
+            const grid = document.getElementById('boardGrid');
+            const empty = document.getElementById('emptyBoard');
+
+            document.getElementById('totalDreams').textContent = data.dreams.length;
+            document.getElementById('completedDreams').textContent = data.dreams.filter(d => d.completed).length;
+            const pct = data.dreams.length > 0 ? Math.round((data.dreams.filter(d => d.completed).length / data.dreams.length) * 100) : 0;
+            document.getElementById('progressPct').textContent = pct + '%';
+
+            if (dreams.length === 0) {
+                grid.innerHTML = '';
+                if (empty) grid.appendChild(empty);
+                if (empty) empty.style.display = 'block';
+            } else {
+                if (empty && empty.parentNode) empty.style.display = 'none';
+                grid.innerHTML = dreams.map((d, i) => {
+                    const realIndex = data.dreams.indexOf(d);
+                    return `
+                    <div class="dream-card" style="border-left:4px solid ${d.color || '#d4745c'};">
+                        ${d.imageUrl ? `<img src="${d.imageUrl}" alt="${d.title}" onerror="this.style.display='none';">` :
+                            `<div style="height:120px;background:${d.color || '#d4745c'};display:flex;align-items:center;justify-content:center;font-size:3em;color:#fff;">🌟</div>`}
+                        <div class="card-body">
+                            <div class="card-title">${d.completed ? '✅ ' : ''}${d.title}</div>
+                            <div class="card-cat">${getCatEmoji(d.category)} ${d.category}</div>
+                        </div>
+                        <div class="card-actions">
+                            <button onclick="toggleDream(${realIndex})" title="Орындалды">${d.completed ? '✅' : '⬜'}</button>
+                            <button class="btn-del" onclick="deleteDream(${realIndex})" title="Өшіру">✕</button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        function getCatEmoji(cat) {
+            const c = categories.find(x => x.id === cat);
+            return c ? c.emoji : '🌟';
+        }
+
+        function toggleDream(i) {
+            const data = getUserData();
+            data.dreams[i].completed = !data.dreams[i].completed;
+            updateUserData(data);
+            renderBoard();
+        }
+
+        function deleteDream(i) {
+            if (!confirm('Өшіресіз бе?')) return;
+            const data = getUserData();
+            data.dreams.splice(i, 1);
+            updateUserData(data);
+            renderBoard();
+        }
+
+        // ==================== АРМАН ҚОСУ ====================
+        function openAddDreamModal() {
+            document.getElementById('addDreamModal').classList.add('active');
+            document.getElementById('dreamTitle').value = '';
+            document.getElementById('dreamDesc').value = '';
+            document.getElementById('dreamImgUrl').value = '';
+            document.getElementById('dreamImgFile').value = '';
+            document.getElementById('dreamDone').checked = false;
+            document.querySelectorAll('#colorRow .color-dot').forEach((d, i) => d.classList.toggle('sel', i === 0));
+        }
+
+        function addDream() {
+            const title = document.getElementById('dreamTitle').value.trim();
+            const desc = document.getElementById('dreamDesc').value.trim();
+            const category = document.getElementById('dreamCat').value;
+            const imgUrl = document.getElementById('dreamImgUrl').value.trim();
+            const completed = document.getElementById('dreamDone').checked;
+            const file = document.getElementById('dreamImgFile').files[0];
+            const selColor = document.querySelector('#colorRow .color-dot.sel');
+            const color = selColor ? selColor.dataset.c : '#d4745c';
+
+            if (!title) { alert('Атауын жазыңыз!'); return; }
+
+            const saveFunc = (finalUrl) => {
+                const data = getUserData();
+                data.dreams.push({ title, desc, category, color, imageUrl: finalUrl, completed, date: new Date().toISOString() });
+                updateUserData(data);
+                closeModal('addDreamModal');
+                renderBoard();
+            };
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => saveFunc(e.target.result);
+                reader.readAsDataURL(file);
+            } else {
+                saveFunc(imgUrl || '');
+            }
+        }
+
+        // Түс таңдау
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('color-dot') && e.target.closest('#colorRow')) {
+                document.querySelectorAll('#colorRow .color-dot').forEach(d => d.classList.remove('sel'));
+                e.target.classList.add('sel');
+            }
+        });
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Модаль сыртын басу
+        document.querySelectorAll('.modal-overlay').forEach(o => {
+            o.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+        });
+
+        // Escape
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+        });
+
+        // ==================== ГАЛЕРЕЯ ====================
+        let galleryFilter = 'all';
+
+        function filterGallery(cat, el) {
+            galleryFilter = cat;
+            document.querySelectorAll('#galleryFilters .cat-chip').forEach(c => c.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderGallery();
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            let images = [...galleryData].sort(() => Math.random() - 0.5);
+            if (galleryFilter !== 'all') images = images.filter(i => i.cat === galleryFilter);
+            if (images.length < 4) images = galleryData.filter(i => i.cat === galleryFilter);
+
+            const userData = getUserData();
+            const savedUrls = userData.dreams.map(d => d.imageUrl).filter(Boolean);
+
+            grid.innerHTML = images.map(img => `
+                <div class="pin-card">
+                    <img src="${img.url}" alt="${img.title}" loading="lazy">
+                    <div class="pin-body"><h4>${img.title}</h4><p>${getCatEmoji(img.cat)} ${img.cat}</p></div>
+                    <button class="save-pin-btn ${savedUrls.includes(img.url) ? 'saved' : ''}" 
+                            onclick="saveFromGallery('${img.url}', '${img.title.replace(/'/g, "\\'")}', '${img.cat}')">
+                        ${savedUrls.includes(img.url) ? '✓ Сақталды' : '💾 Сақтау'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function loadMoreGallery() { renderGallery(); }
+
+        function saveFromGallery(url, title, cat) {
+            const data = getUserData();
+            if (data.dreams.find(d => d.imageUrl === url)) {
+                alert('⚠️ Бұл сурет тақтада бар!');
+                return;
+            }
+            data.dreams.push({ title, desc: '', category: cat, color: '#d4745c', imageUrl: url, completed: false, date: new Date().toISOString() });
+            updateUserData(data);
+            renderGallery();
+            renderBoard();
+            alert('✅ Тақтаға қосылды!');
+        }
+
+        // ==================== МАҚСАТТАР ====================
+        function openAddGoalModal() {
+            document.getElementById('addGoalModal').classList.add('active');
+            document.getElementById('goalTitle').value = '';
+            document.getElementById('goalDate').value = '';
+        }
+
+        function addGoal() {
+            const title = document.getElementById('goalTitle').value.trim();
+            const date = document.getElementById('goalDate').value;
+            if (!title) { alert('Мақсатты жазыңыз!'); return; }
+            const data = getUserData();
+            data.goals.push({ title, deadline: date, completed: false, date: new Date().toISOString() });
+            updateUserData(data);
+            closeModal('addGoalModal');
+            renderGoals();
+        }
+
+        function renderGoals() {
+            const data = getUserData();
+            const container = document.getElementById('goalsContainer');
+            if (data.goals.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:30px;">Әзірге мақсаттар жоқ</p>';
+                return;
+            }
+            container.innerHTML = data.goals.map((g, i) => {
+                const days = g.deadline ? Math.ceil((new Date(g.deadline) - new Date()) / 86400000) : null;
+                return `
+                <div style="background:var(--card);padding:14px 18px;border-radius:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);">
+                    <span style="font-size:1.8em;">${g.completed ? '✅' : '🎯'}</span>
+                    <div style="flex:1;">
+                        <strong>${g.title}</strong>
+                        ${g.deadline ? `<br><small style="color:${days<0?'#e74c3c':'var(--text2)'};">📅 ${g.deadline} (${days} күн)</small>` : ''}
+                    </div>
+                    <button class="icon-btn" onclick="toggleGoal(${i})">${g.completed ? '↩' : '✅'}</button>
+                    <button class="icon-btn" style="color:#e74c3c;" onclick="deleteGoal(${i})">✕</button>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleGoal(i) {
+            const data = getUserData();
+            data.goals[i].completed = !data.goals[i].completed;
+            updateUserData(data);
+            renderGoals();
+        }
+
+        function deleteGoal(i) {
+            if (!confirm('Өшіресіз бе?')) return;
+            const data = getUserData();
+            data.goals.splice(i, 1);
+            updateUserData(data);
+            renderGoals();
+        }
+
+        // ==================== БАСҚА ====================
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const data = getUserData();
+            data.theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+            updateUserData(data);
+        }
+
+        function changeQuote() {
+            quoteIdx = (quoteIdx + 1) % quotes.length;
+            document.getElementById('quoteDisplay').textContent = quotes[quoteIdx];
+        }
+
+        function renderAll() {
+            renderCategoryFilters();
+            renderBoard();
+            renderGoals();
+            renderGallery();
+            changeQuote();
+        }
+
+        // Авто-сақтау (әр 10 секунд)
+        setInterval(() => {
+            if (currentUser) saveCurrentUserData();
+        }, 10000);
+
+        // Бастапқы жүктеу
+        renderCategoryFilters();
+    </script>
+</body>
+</html>
